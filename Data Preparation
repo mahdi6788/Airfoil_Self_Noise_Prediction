@@ -1,0 +1,11 @@
+## Data Scaling
+# scale entire dataset
+scaler = StandardScaler()
+scaler.fit(data)
+scaled = scaler.transform(data)
+scaled = pd.DataFrame(scaled, columns= data.columns)
+
+## split to train and test sets
+x = scaled.drop("SSPL", axis="columns")
+y = scaled.SSPL
+train_set, test_set, train_label, test_label = train_test_split(x, y, test_size=0.2, random_state=0)
