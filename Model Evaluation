@@ -1,0 +1,54 @@
+## Cross_Validation
+
+def model_selector(estimator):
+    squred_error = cross_val_score(estimator, train_set, train_label, scoring="neg_mean_squared_error", cv=10)
+    sqrt_error = np.sqrt(-squred_error)
+    mean_error = sqrt_error.mean()
+    std_error = sqrt_error.std()
+    return mean_error, std_error
+
+estimators = [LinearRegression, DecisionTreeRegressor, RandomForestRegressor, XGBRegressor]
+means = []
+stds = []
+for i in range(len(estimators)):
+    estimator = estimators[i]
+    mean, std = model_selector(estimator())
+    means.append(mean)
+    stds.append(std)
+
+set = [means,stds]
+set_array = np.array(set)
+set_frame = pd.DataFrame(set_array, columns=["LinearRegression", "DecisionTreeRegressor", "RandomForestRegressor", "XGBRegressor"], index= ["mean", "std"])
+
+# Hyperparameter Optimization
+param_grid = [{"n_estimators":[1000, 2000, 3000], "max_depth":[6,9,12], "learning_rate":[0.5,0.05,0.01]}]
+estimator = XGBRegressor()
+grid_search = GridSearchCV(estimator= estimator, param_grid= param_grid, scoring= "neg_mean_squared_error", cv= 5)
+grid_search.fit(train_set, train_label)
+
+# Select the best hyperparameters
+print("best_parametere =", grid_search.best_params_)
+
+## Use the scaler and best estimator to predict the SSPL of a sample
+
+def final_predictor(f, alpha, c, U_infinity, delta):
+    sample = np.array([f, alpha, c, U_infinity, delta, 0]).reshape(1,-1)
+    sample = pd.DataFrame(sample, columns=["f","alpha","c","U_infinity","delta","SSPL"])
+
+    sample_scaled = scaler.transform(sample)
+    sample_scaled = pd.DataFrame(sample_scaled, columns=["f","alpha","c","U_infinity","delta","SSPL"])
+    sample_scaled = sample_scaled.drop(["SSPL"],axis="columns")
+
+    predicted = best_estimator.predict(sample_scaled)
+    predicted = pd.DataFrame(predicted, columns=["predicted"])
+
+    predicted_row = pd.concat([sample_scaled, predicted], axis=1)
+
+    inverted_prediction = scaler.inverse_transform(predicted_row.values.reshape(1,-1))
+    return inverted_prediction
+
+## sample
+f, alpha, c, U_infinity, delta = 10000, 0, 0.025, 71.3, 0.0004
+
+predicted_sspl = final_predictor(f, alpha, c, U_infinity, delta)
+predicted_sspl
