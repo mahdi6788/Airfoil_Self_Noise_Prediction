@@ -6,7 +6,7 @@
 
 ## Context
 ### NASA dataset obtained from a series of aerodynamic and acoustic tests of two and three-dimensional airfoil blade sections conducted in an anechoic wind tunnel. 
-### The data was obtained from UCI Machine Learning Repository: https://archive.ics.uci.edu/ml/datasets/airfoil+self-noise
+### The data was obtained from UCI Machine Learning Repository: https://archive.ics.uci.edu/dataset/291/airfoil+self+noise
 
 ## Content
 ### The NASA data set comprises different size NACA 0012 airfoils (n0012-il) at various wind tunnel speeds and angles of attack. 
